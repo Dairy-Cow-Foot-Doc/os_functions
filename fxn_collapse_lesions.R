@@ -4,11 +4,13 @@
 library(dtplyr)
 
 fxn_collapse_lesions <- function(data,
-                           lesions){
+                                 farm_col = location_event ,
+                                 lesions){
   
   # deal with trim only and lame on same day
   data <- data |> 
-  lazy_dt() |> 
+    rename(farm = {{ farm_col }}) |> 
+    lazy_dt() |> 
     # delete footrim if lame/footrim on same day
     group_by(farm, id_animal, date_event) |>
     slice_min(trimonly) |> 
