@@ -3,7 +3,7 @@
 # 
 library(dtplyr)
 
-fxn_clean_trim <- function(data,
+fxn_collapse_lesions <- function(data,
                            lesions){
   
   # deal with trim only and lame on same day
