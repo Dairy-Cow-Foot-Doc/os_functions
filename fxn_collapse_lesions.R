@@ -1,6 +1,7 @@
-# to deal with lesion and trim only 
+# to deal with lesion and trim only occuring on same day
 # 
 # 
+
 library(dtplyr)
 
 fxn_collapse_lesions <- function(data,
