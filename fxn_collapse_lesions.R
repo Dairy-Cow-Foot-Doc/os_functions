@@ -18,7 +18,7 @@ fxn_collapse_lesions <- function(data,
     as_tibble()
   
   # data set to summarize
-  data_sum <- lame_events |> 
+  data_sum <- data |> 
     group_by(farm, id_animal, date_event) |>
     summarise(across(.cols = all_of(lesions), max)
     )|> 
