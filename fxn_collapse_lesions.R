@@ -5,30 +5,36 @@
 library(dtplyr)
 
 fxn_collapse_lesions <- function(data,
-                                 farm_col = location_event ,
+                                 farm_col = location_event,
+                                 id_col = id_animal,
                                  lesions){
   
   # deal with trim only and lame on same day
   data <- data |> 
-    rename(farm = {{ farm_col }}) |> 
+    rename(location_event = {{ farm_col }},
+           id_animal = {{ id_col }}) |> 
     lazy_dt() |> 
     # delete footrim if lame/footrim on same day
-    group_by(farm, id_animal, date_event) |>
-    slice_min(trimonly) |> 
+    group_by(location_event, id_animal, date_event) |>
+    slice_min(trimonly, n =1, with_ties = FALSE) |> 
     ungroup() |> 
     as_tibble()
   
-  # data set to summarize
+  # data set to summarize lesion so only 1 row/date event
   data_sum <- data |> 
-    group_by(farm, id_animal, date_event) |>
-    summarise(across(.cols = all_of(lesions), max)
+    lazy_dt() |>
+    group_by(location_event, id_animal, date_event) |>
+    summarise(across(.cols = all_of(lesions), max, na.rm = TRUE)
     )|> 
-    ungroup() 
+    ungroup() |> 
+    as_tibble()
   
+  # merge back to orginal data
   data <- data |> 
+    # remove lesion columns asnd get distinct rows so only 1/date event
     select(-c(all_of(lesions))) |> 
-    distinct(farm, id_animal, date_event, .keep_all = TRUE) |> 
+    distinct(location_event, id_animal, date_event, .keep_all = TRUE) |> 
     left_join(data_sum, 
-              by = join_by(farm, id_animal, date_event)) 
+              by = join_by(location_event, id_animal, date_event)) 
   
 }
