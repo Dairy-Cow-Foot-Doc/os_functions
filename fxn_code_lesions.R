@@ -1,5 +1,19 @@
 # create function for to classify lesions
 # this function can be usefull for classifying other remarks/protocols
+# 
+
+# fxn to detect if a string contains a pattern, ignoring case by default
+str_contains <- function(string,
+                         pattern,
+                         ignore_case = TRUE) {
+  str_detect(
+    string,
+    regex(pattern,
+          ignore_case = ignore_case
+    )
+  )
+}
+
 
 fxn_code_lesions <- function(.df, event_var = event,
                              protocol_var = protocols,
