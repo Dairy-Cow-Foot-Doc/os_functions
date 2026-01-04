@@ -1,25 +1,22 @@
 # create function for to classify lesions
 # this function can be usefull for classifying other remarks/protocols
 
-str_contains <- function(string,
-                         pattern,
-                         ignore_case = TRUE) {
-  str_detect(
-    string,
-    regex(pattern,
-      ignore_case = ignore_case
-    )
-  )
-}
-
-
-# classify protocol/remarks into lesions using standard remarks/protocols
-# requires a check to make things align
-# uses other to catch weird ones and non standard remarks/protocols
-
 fxn_code_lesions <- function(.df, event_var = event,
                              protocol_var = protocols,
                              remark_var = remark) {
+  
+  # Check for "Ab"
+  ab_detected <- any(str_contains(pull(.df, {{ remark_var }}), "Ab"), na.rm = TRUE) | 
+    any(str_contains(pull(.df, {{ protocol_var }}), "Ab"), na.rm = TRUE)
+  
+  if (ab_detected) {
+    cli::cli_warn(c(
+      "!" = "Your remarks or protocols likely contain lesions coded as {.strong abscess}.",
+      "i" = "These are currently coded as {.field other}.",
+      "*" = "Consider reclassifying as {.val noninf} and {.val wld/sole_ulcer} depending on farm case definitions."
+    ))
+  }
+  
   .df |>
     mutate(
       trimonly = case_when(
@@ -124,8 +121,8 @@ fxn_code_lesions <- function(.df, event_var = event,
       # classify into broad categories
       inf = if_else(dd == 1 | footrot == 1, 1, 0),
       noninf = if_else(sole_ulcer == 1 | wld == 1 | toe == 1 |
-        sole_fracture == 1 | hemorrhage == 1,
-      1, 0
+                         sole_fracture == 1 | hemorrhage == 1,
+                       1, 0
       ),
       # codes it so any cow not a trim only has a lesion
       lesion = if_else(trimonly == 1, 0, 1)
