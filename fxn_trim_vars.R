@@ -23,7 +23,7 @@ fxn_trim_vars <- function(data, ..., date_var, trimonly_var) {
   # 3. Check if the ordering variable is actually a Date/Time
   if (!inherits(pull(data, {{ date_var }}), c("Date", "POSIXt", "difftime"))) {
     cli_abort(c(
-      "x" = "The {.var order_var} column must be a {.cls Date} or {.cls POSIXct} object.",
+      "x" = "The {.var date_var} column must be a {.cls Date} or {.cls POSIXct} object.",
       "i" = "Your input column is of class: {.cls {class(pull(data, {{ order_var }}))}}",
       "hint" = "Try converting it with {.fn as.Date} or {.fn lubridate::ymd} before calling this function."
     ))
@@ -40,7 +40,7 @@ fxn_trim_vars <- function(data, ..., date_var, trimonly_var) {
       type_prev_trim = lag({{ trimonly_var }}),
       date_prev_trim = lag({{ date_var }}),
       
-      days_from_prev_trim = {{ date_var }} - date_prev_trim,
+      days_from_prev_trim = as.numeric({{ date_var }} - date_prev_trim),
       
       days_from_prev_trimonly_lesion = if_else({{ trimonly_var }} == 0 & type_prev_trim == 1,
                                days_from_prev_trim, NA),
