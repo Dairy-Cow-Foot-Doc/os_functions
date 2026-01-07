@@ -31,7 +31,7 @@ fxn_trim_vars <- function(data, ..., date_var, trimonly_var) {
   
   # 4. Execution logic
   data %>%
-    lazy_dt() %>%
+    #lazy_dt() %>%
     arrange(pick(...), {{ date_var }}) %>% 
     group_by(...) %>%
     mutate(
@@ -48,6 +48,6 @@ fxn_trim_vars <- function(data, ..., date_var, trimonly_var) {
       days_to_next_trim = lead(days_from_prev_trim),
       days_trimonly_to_lesion = lead(days_from_prev_trimonly_lesion)
     ) %>%
-    ungroup() %>%
-    as_tibble()
+    ungroup() #%>%
+    #as_tibble()
 }
