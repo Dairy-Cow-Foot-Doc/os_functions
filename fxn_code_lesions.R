@@ -38,6 +38,7 @@ fxn_code_lesions <- function(.df, event_var = event,
         str_contains({{ protocol_var }}, "Trim") ~ 1,
         str_contains({{ protocol_var }}, "NONE") ~ 1,
         str_contains({{ remark_var }}, "Trim") ~ 1,
+        str_contains({{ remark_var }}, "MAINT") ~ 1
         !is.na({{ protocol_var }}) ~ 0,
         !is.na({{ remark_var }}) ~ 0,
         .default = NA
@@ -97,6 +98,7 @@ fxn_code_lesions <- function(.df, event_var = event,
         str_contains({{ remark_var }}, "EXNF") ~ 1,
         str_contains({{ remark_var }}, "EXCF") ~ 1,
         str_contains({{ remark_var }}, "XCDF") ~ 1,
+        str_contains({{ remark_var }}, "ALB") ~ 1,
         str_contains({{ protocol_var }}, "Footrot") ~ 1,
         str_contains({{ protocol_var }}, "rot") ~ 1,
         str_contains({{ protocol_var }}, "foot rot") ~ 1,
@@ -123,6 +125,7 @@ fxn_code_lesions <- function(.df, event_var = event,
       injury = case_when(
         str_contains({{ remark_var }}, "TRML") ~ 1,
         str_contains({{ protocol_var }}, "Injury") ~ 1,
+        str_contains({{ remark_var }}, "GOLPE") ~ 1,
         str_contains({{ protocol_var }}, "Leg") ~ 1,
         .default = 0
       ),
