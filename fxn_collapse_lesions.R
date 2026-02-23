@@ -15,7 +15,7 @@ fxn_collapse_lesions <- function(data,
     #       id_animal = {{ id_col }}) |>
     lazy_dt() |>
     # delete footrim if lame/footrim on same day
-    group_by({{ farm_col }}, {{ id_animal }}, {{ date_col }}) |>
+    group_by({{ farm_col }}, {{ id_col }}, {{ date_col }}) |>
     slice_min(trimonly, n = 1, with_ties = FALSE) |>
     ungroup() |>
     as_tibble()
@@ -23,7 +23,7 @@ fxn_collapse_lesions <- function(data,
   # data set to summarize lesion so only 1 row/date event
   data_sum <- data |>
     lazy_dt() |>
-    group_by({{ farm_col }}, {{ id_animal }}, {{ date_col }}) |>
+    group_by({{ farm_col }}, {{ id_col }}, {{ date_col }}) |>
     summarise(across(.cols = all_of(lesions), max, na.rm = TRUE)) |>
     ungroup() |>
     as_tibble()
@@ -32,13 +32,13 @@ fxn_collapse_lesions <- function(data,
   data <- data |>
     # remove lesion columns and get distinct rows so only 1/date event
     select(-c(all_of(lesions))) |>
-    distinct({{ farm_col }}, {{ id_animal }}, {{ date_col }},
+    distinct({{ farm_col }}, {{ id_col }}, {{ date_col }},
       .keep_all = TRUE
     ) |>
     left_join(data_sum,
       by = join_by(
         {{ farm_col }},
-        {{ id_animal }}, {{ date_col }}
+        {{ id_col }}, {{ date_col }}
       )
     )
 }
