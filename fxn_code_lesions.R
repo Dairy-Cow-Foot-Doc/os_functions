@@ -1,6 +1,6 @@
 # create function for to classify lesions
 # this function can be usefull for classifying other remarks/protocols
-# 
+#
 
 # fxn to detect if a string contains a pattern, ignoring case by default
 str_contains <- function(string,
@@ -9,7 +9,7 @@ str_contains <- function(string,
   str_detect(
     string,
     regex(pattern,
-          ignore_case = ignore_case
+      ignore_case = ignore_case
     )
   )
 }
@@ -18,11 +18,10 @@ str_contains <- function(string,
 fxn_code_lesions <- function(.df, event_var = event,
                              protocol_var = protocols,
                              remark_var = remark) {
-  
   # Check for "Ab"
-  ab_detected <- any(str_contains(pull(.df, {{ remark_var }}), "Ab"), na.rm = TRUE) | 
+  ab_detected <- any(str_contains(pull(.df, {{ remark_var }}), "Ab"), na.rm = TRUE) |
     any(str_contains(pull(.df, {{ protocol_var }}), "Ab"), na.rm = TRUE)
-  
+
   if (ab_detected) {
     cli::cli_warn(c(
       "!" = "Your remarks or protocols likely contain lesions coded as {.strong abscess}.",
@@ -30,7 +29,7 @@ fxn_code_lesions <- function(.df, event_var = event,
       "*" = "Consider reclassifying as {.val noninf} and {.val wld/sole_ulcer} depending on farm case definitions."
     ))
   }
-  
+
   .df |>
     mutate(
       trimonly = case_when(
@@ -38,7 +37,7 @@ fxn_code_lesions <- function(.df, event_var = event,
         str_contains({{ protocol_var }}, "Trim") ~ 1,
         str_contains({{ protocol_var }}, "NONE") ~ 1,
         str_contains({{ remark_var }}, "Trim") ~ 1,
-        str_contains({{ remark_var }}, "MAINT") ~ 1
+        str_contains({{ remark_var }}, "MAINT") ~ 1,
         !is.na({{ protocol_var }}) ~ 0,
         !is.na({{ remark_var }}) ~ 0,
         .default = NA
@@ -138,8 +137,8 @@ fxn_code_lesions <- function(.df, event_var = event,
       # classify into broad categories
       inf = if_else(dd == 1 | footrot == 1, 1, 0),
       noninf = if_else(sole_ulcer == 1 | wld == 1 | toe == 1 |
-                         sole_fracture == 1 | hemorrhage == 1,
-                       1, 0
+        sole_fracture == 1 | hemorrhage == 1,
+      1, 0
       ),
       # codes it so any cow not a trim only has a lesion
       lesion = if_else(trimonly == 1, 0, 1)
